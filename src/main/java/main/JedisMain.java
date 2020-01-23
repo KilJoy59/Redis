@@ -1,7 +1,6 @@
 package main;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ListPosition;
 
 /**
@@ -18,10 +17,11 @@ public class JedisMain {
     private static final Integer redisPort = 6379;
 
     //Jedis connection
-    private static Jedis jedis = new Jedis(redisHost,redisPort);
+    private static Jedis jedis;
 
 
     public static void main(String[] args) throws InterruptedException {
+        jedis = new Jedis(redisHost, redisPort);
         addUsers();
         Long userListLength = jedis.llen(key);
 
@@ -40,14 +40,14 @@ public class JedisMain {
         }
     }
 
-
-    //Заполнение
+    //Заполнение списка
     public static void addUsers() {
         for (int i = 0; i < usersCount; i++) {
             jedis.rpush(key, Integer.toString(i));
         }
     }
 
+    //Случайный юзер который дал взятку
     public static long randomPay(Long listLength, String user) {
         String richUser = "";
         long randomUser = 0;
@@ -63,6 +63,6 @@ public class JedisMain {
         jedis.linsert(key, ListPosition.AFTER, user,richUser);
 
         System.out.println("Пользователь " + richUser + " дал взятку !!!");
-            return randomUser;
+        return randomUser;
     }
 }
